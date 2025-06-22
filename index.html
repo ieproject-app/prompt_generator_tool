@@ -14,25 +14,37 @@
       --border: #d1d5db;
       --radius: 8px;
       --shadow: rgba(0, 0, 0, 0.1);
+      --success: #10b981;
+      --error: #ef4444;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text);
+      line-height: 1.5;
     }
     header {
       background: var(--primary);
       color: #fff;
-      padding: 1rem;
+      padding: 1.5rem 1rem;
       text-align: center;
       box-shadow: 0 2px 4px var(--shadow);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.75rem;
+    }
+    header p {
+      margin: 0.5rem 0 0;
+      opacity: 0.9;
+      font-size: 1rem;
     }
     main {
       display: flex;
       gap: 1.5rem;
-      max-width: 960px;
+      max-width: 1080px;
       margin: 2rem auto;
       padding: 0 1rem;
     }
@@ -48,27 +60,38 @@
       margin-top: 0;
       font-size: 1.25rem;
       color: var(--primary);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
     }
     label {
       display: block;
-      margin: 0.75rem 0 0.25rem;
+      margin: 1rem 0 0.25rem;
       font-weight: 600;
+      font-size: 0.95rem;
     }
-    input[type=text], textarea {
+    .optional {
+      font-weight: normal;
+      color: #6b7280;
+      font-size: 0.85em;
+    }
+    input[type=text], textarea, select {
       width: 100%;
-      padding: 0.6rem;
+      padding: 0.75rem;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       font-size: 1rem;
-      transition: border-color 0.2s;
+      transition: all 0.2s;
+      font-family: inherit;
     }
-    input[type=text]:focus, textarea:focus {
+    input[type=text]:focus, textarea:focus, select:focus {
       outline: none;
       border-color: var(--secondary);
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
     }
     textarea {
       resize: vertical;
-      min-height: 80px;
+      min-height: 100px;
+      line-height: 1.5;
     }
     .flex {
       display: flex;
@@ -84,10 +107,27 @@
       border-radius: var(--radius);
       cursor: pointer;
       font-size: 1rem;
-      transition: background 0.2s;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
     .btn:hover {
       background: var(--primary);
+      transform: translateY(-1px);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .btn-secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: #f9fafb;
+      border-color: var(--secondary);
     }
     #output {
       white-space: pre-wrap;
@@ -95,15 +135,92 @@
       padding: 1rem;
       border-radius: var(--radius);
       border: 1px solid var(--border);
-      min-height: 200px;
-      font-family: monospace;
+      min-height: 300px;
+      font-family: 'Menlo', 'Consolas', monospace;
+      line-height: 1.6;
+    }
+    .toast {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: var(--success);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .toast.error {
+      background: var(--error);
+    }
+    .char-count {
+      font-size: 0.8rem;
+      color: #6b7280;
+      text-align: right;
+      margin-top: 0.25rem;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    .tab {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-weight: 500;
+      color: #6b7280;
+    }
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .preset-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .preset-btn:hover {
+      border-color: var(--secondary);
+      background: #f8f9fa;
+    }
+    .preset-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .preset-desc {
+      font-size: 0.85rem;
+      color: #6b7280;
     }
     @media (max-width: 768px) {
       main {
         flex-direction: column;
       }
-      #output {
-        min-height: 150px;
+      .tabs {
+        overflow-x: auto;
+      }
+      .card {
+        width: 100%;
       }
     }
   </style>
@@ -111,74 +228,379 @@
 <body>
   <header>
     <h1>AI Prompt Generator</h1>
+    <p>Buat prompt AI yang efektif dengan mudah</p>
   </header>
   <main>
     <div class="card">
-      <h2>Pengaturan Prompt</h2>
-      <form id="promptForm">
-        <label for="role">Peran / Persona</label>
-        <input type="text" id="role" placeholder="e.g. Content writer berpengalaman" />
-
-        <label for="objective">Tujuan / Output yang Diharapkan</label>
-        <input type="text" id="objective" placeholder="e.g. Outline artikel blog tentang..." />
-
-        <label for="constraints">Batasan & Format</label>
-        <input type="text" id="constraints" placeholder="e.g. Maksimal 8 poin, bahasa Indonesia santai" />
-
-        <label for="examples">Contoh (Optional)</label>
-        <textarea id="examples" placeholder="Contoh Input-Output... (few-shot)"></textarea>
-
-        <label for="steps">Langkah-langkah Terstruktur (Optional)</label>
-        <textarea id="steps" placeholder="Langkah 1: ..., Langkah 2: ..."></textarea>
-
-        <label for="audience">Data / Audiens (Optional)</label>
-        <input type="text" id="audience" placeholder="Target audiens e.g. mahasiswa 18-25 tahun" />
-
-        <label for="variants">Variasi & Gaya (Optional)</label>
-        <input type="text" id="variants" placeholder="e.g. Profesional, santai, humoris" />
-
-        <div class="flex" style="margin-top:1.5rem;">
-          <button type="button" class="btn" id="generateBtn">Generate</button>
-          <button type="button" class="btn" id="copyBtn">Salin</button>
-        </div>
-      </form>
+      <div class="tabs">
+        <div class="tab active" data-tab="custom">Custom Prompt</div>
+        <div class="tab" data-tab="presets">Preset Prompt</div>
+        <div class="tab" data-tab="guide">Panduan</div>
+      </div>
+      
+      <div class="tab-content active" id="custom-tab">
+        <h2>Pengaturan Prompt</h2>
+        <form id="promptForm">
+          <label for="role">Peran / Persona <span class="optional">(wajib)</span></label>
+          <input type="text" id="role" placeholder="Contoh: Content writer profesional dengan pengalaman 5 tahun" />
+          
+          <label for="objective">Tujuan / Output yang Diharapkan <span class="optional">(wajib)</span></label>
+          <input type="text" id="objective" placeholder="Contoh: Buat outline artikel blog tentang manfaat AI untuk UMKM" />
+          
+          <label for="constraints">Batasan & Format <span class="optional">(wajib)</span></label>
+          <input type="text" id="constraints" placeholder="Contoh: Maksimal 8 poin, bahasa Indonesia santai, sertakan call-to-action" />
+          
+          <label for="examples">Contoh Input-Output <span class="optional">(opsional)</span></label>
+          <textarea id="examples" placeholder="Masukkan contoh input dan output yang diinginkan (few-shot learning)"></textarea>
+          <div class="char-count" id="examples-count">0/500 karakter</div>
+          
+          <label for="steps">Langkah-langkah Terstruktur <span class="optional">(opsional)</span></label>
+          <textarea id="steps" placeholder="Contoh: 
+1. Analisis topik utama
+2. Identifikasi poin-poin kunci
+3. Susun dalam format hierarki"></textarea>
+          <div class="char-count" id="steps-count">0/500 karakter</div>
+          
+          <label for="audience">Target Audiens <span class="optional">(opsional)</span></label>
+          <input type="text" id="audience" placeholder="Contoh: Pemilik UMKM usia 30-50 tahun dengan pengetahuan teknologi dasar" />
+          
+          <label for="variants">Variasi & Gaya <span class="optional">(opsional)</span></label>
+          <input type="text" id="variants" placeholder="Contoh: Profesional, santai, persuasif, atau humoris" />
+          
+          <label for="tone">Nada & Suasana <span class="optional">(opsional)</span></label>
+          <select id="tone">
+            <option value="">Pilih nada...</option>
+            <option value="Formal">Formal</option>
+            <option value="Semi-formal">Semi-formal</option>
+            <option value="Santai">Santai</option>
+            <option value="Persuasif">Persuasif</option>
+            <option value="Akademik">Akademik</option>
+            <option value="Humoris">Humoris</option>
+          </select>
+          
+          <div class="flex" style="margin-top:1.5rem;">
+            <button type="button" class="btn" id="generateBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              Generate
+            </button>
+            <button type="button" class="btn btn-secondary" id="clearBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              Bersihkan
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <div class="tab-content" id="presets-tab">
+        <h2>Template Prompt</h2>
+        <p>Pilih template untuk memulai cepat:</p>
+        
+        <button class="preset-btn" data-preset="content-writer">
+          <div class="preset-title">Penulis Konten</div>
+          <div class="preset-desc">Untuk membuat artikel blog atau konten website</div>
+        </button>
+        
+        <button class="preset-btn" data-preset="social-media">
+          <div class="preset-title">Social Media Manager</div>
+          <div class="preset-desc">Untuk membuat konten media sosial yang menarik</div>
+        </button>
+        
+        <button class="preset-btn" data-preset="academic-research">
+          <div class="preset-title">Penelitian Akademik</div>
+          <div class="preset-desc">Untuk membantu penulisan karya ilmiah</div>
+        </button>
+        
+        <button class="preset-btn" data-preset="business-plan">
+          <div class="preset-title">Perencanaan Bisnis</div>
+          <div class="preset-desc">Untuk menyusun strategi atau rencana bisnis</div>
+        </button>
+        
+        <button class="preset-btn" data-preset="coding-assistant">
+          <div class="preset-title">Asisten Pemrograman</div>
+          <div class="preset-desc">Untuk membantu menulis atau debugging kode</div>
+        </button>
+      </div>
+      
+      <div class="tab-content" id="guide-tab">
+        <h2>Panduan Membuat Prompt Efektif</h2>
+        <h3>1. Peran/Persona</h3>
+        <p>Tentukan peran AI yang Anda inginkan. Contoh: "Anda adalah seorang content writer dengan pengalaman 5 tahun di bidang teknologi."</p>
+        
+        <h3>2. Tujuan Jelas</h3>
+        <p>Jelaskan output yang Anda harapkan secara spesifik. Contoh: "Buatkan outline artikel blog tentang manfaat AI untuk UMKM."</p>
+        
+        <h3>3. Batasan & Format</h3>
+        <p>Berikan batasan yang jelas. Contoh: "Maksimal 500 kata, bahasa Indonesia santai, sertakan call-to-action di akhir."</p>
+        
+        <h3>4. Contoh (Few-shot Learning)</h3>
+        <p>Berikan contoh input-output yang Anda inginkan untuk membantu AI memahami pola yang diharapkan.</p>
+        
+        <h3>5. Langkah-langkah</h3>
+        <p>Jika perlu, pecahkan tugas menjadi langkah-langkah terstruktur.</p>
+        
+        <h3>Tips Tambahan:</h3>
+        <ul>
+          <li>Gunakan bahasa yang jelas dan spesifik</li>
+          <li>Sertakan konteks yang relevan</li>
+          <li>Tentukan format output yang diinginkan</li>
+          <li>Berikan contoh jika memungkinkan</li>
+          <li>Tentukan nada dan gaya penulisan</li>
+        </ul>
+      </div>
     </div>
 
     <div class="card">
-      <h2>Prompt Anda</h2>
-      <div id="output">Hasil prompt akan muncul di sini...</div>
+      <div class="flex" style="justify-content: space-between; align-items: center;">
+        <h2>Prompt Anda</h2>
+        <div class="char-count" id="output-count">0 karakter</div>
+      </div>
+      <div id="output">Hasil prompt akan muncul di sini... Isi setidaknya bidang "Peran", "Tujuan", dan "Batasan" lalu klik Generate.</div>
+      <div class="flex" style="margin-top:1rem;">
+        <button type="button" class="btn" id="copyBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          Salin Prompt
+        </button>
+        <button type="button" class="btn btn-secondary" id="saveBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Simpan
+        </button>
+      </div>
     </div>
   </main>
 
+  <div class="toast" id="toast"></div>
+
   <script>
-    const generate = () => {
-      const role = document.getElementById('role').value.trim();
-      const obj = document.getElementById('objective').value.trim();
-      const cons = document.getElementById('constraints').value.trim();
-      const ex = document.getElementById('examples').value.trim();
-      const st = document.getElementById('steps').value.trim();
-      const aud = document.getElementById('audience').value.trim();
-      const varg = document.getElementById('variants').value.trim();
+    // DOM Elements
+    const roleInput = document.getElementById('role');
+    const objectiveInput = document.getElementById('objective');
+    const constraintsInput = document.getElementById('constraints');
+    const examplesInput = document.getElementById('examples');
+    const stepsInput = document.getElementById('steps');
+    const audienceInput = document.getElementById('audience');
+    const variantsInput = document.getElementById('variants');
+    const toneInput = document.getElementById('tone');
+    const generateBtn = document.getElementById('generateBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const outputDiv = document.getElementById('output');
+    const toast = document.getElementById('toast');
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+    
+    // Character counters
+    const examplesCount = document.getElementById('examples-count');
+    const stepsCount = document.getElementById('steps-count');
+    const outputCount = document.getElementById('output-count');
+
+    // Preset templates
+    const presets = {
+      'content-writer': {
+        role: 'Content writer profesional dengan spesialisasi di bidang teknologi',
+        objective: 'Buat outline artikel blog tentang manfaat AI untuk bisnis kecil',
+        constraints: 'Maksimal 8 poin utama, bahasa Indonesia semi-formal, sertakan call-to-action di akhir',
+        examples: 'Input: Manfaat cloud computing\nOutput:\n1. Pengenalan cloud computing\n2. Skalabilitas yang fleksibel\n3. Penghematan biaya infrastruktur\n...',
+        steps: '1. Identifikasi manfaat utama\n2. Urutkan berdasarkan dampak terbesar\n3. Sertakan contoh kasus\n4. Berikan data pendukung jika ada',
+        audience: 'Pemilik bisnis kecil dengan pengetahuan teknologi dasar',
+        variants: 'Formal, semi-formal, santai',
+        tone: 'Semi-formal'
+      },
+      'social-media': {
+        role: 'Social media specialist untuk platform Instagram',
+        objective: 'Buat 5 ide caption untuk postingan tentang produk kopi baru',
+        constraints: 'Maksimal 150 karakter per caption, sertakan 2-3 hashtag relevan, gaya engaging',
+        examples: 'Produk: Cold brew vanilla\nCaption: "Nikmati kesegaran cold brew dengan sentuhan vanilla yang lembut. Perfect untuk temani harimu! ☕️ #ColdBrewTime #KopiVanilla"',
+        audience: 'Anak muda usia 18-35 tahun penggemar kopi',
+        variants: 'Fun, edukatif, promosi',
+        tone: 'Santai'
+      },
+      'academic-research': {
+        role: 'Asisten peneliti bidang ilmu sosial',
+        objective: 'Buat kerangka penelitian tentang dampak media sosial pada kesehatan mental remaja',
+        constraints: 'Gunakan format akademik, sertakan latar belakang, rumusan masalah, metode penelitian, dan referensi teori',
+        steps: '1. Latar belakang penelitian\n2. Rumusan masalah\n3. Tinjauan pustaka\n4. Metodologi\n5. Hipotesis',
+        tone: 'Akademik'
+      },
+      'business-plan': {
+        role: 'Konsultan bisnis dengan pengalaman 10 tahun',
+        objective: 'Buat executive summary untuk rencana bisnis startup edtech',
+        constraints: 'Maksimal 300 kata, fokus pada value proposition dan model bisnis',
+        audience: 'Calon investor venture capital',
+        tone: 'Formal'
+      },
+      'coding-assistant': {
+        role: 'Senior developer JavaScript berpengalaman',
+        objective: 'Bantu saya memperbaiki bug dalam fungsi sorting ini',
+        constraints: 'Gunakan ES6+, berikan penjelasan untuk setiap perubahan yang dibuat',
+        examples: 'Input:\nfunction sortArray(arr) {\n  return arr.sort();\n}\n\nProblem: Tidak handle angka dengan benar\n\nOutput:\nfunction sortArray(arr) {\n  return arr.sort((a,b) => a - b);\n}',
+        tone: 'Formal'
+      }
+    };
+
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        
+        tab.classList.add('active');
+        document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+      });
+    });
+
+    // Preset buttons
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const preset = presets[btn.dataset.preset];
+        if (preset) {
+          roleInput.value = preset.role || '';
+          objectiveInput.value = preset.objective || '';
+          constraintsInput.value = preset.constraints || '';
+          examplesInput.value = preset.examples || '';
+          stepsInput.value = preset.steps || '';
+          audienceInput.value = preset.audience || '';
+          variantsInput.value = preset.variants || '';
+          toneInput.value = preset.tone || '';
+          
+          updateCharacterCounts();
+          showToast('Template loaded!');
+          
+          // Switch back to custom tab
+          tabs[0].click();
+        }
+      });
+    });
+
+    // Character counters
+    function updateCharacterCounts() {
+      examplesCount.textContent = `${examplesInput.value.length}/500 karakter`;
+      stepsCount.textContent = `${stepsInput.value.length}/500 karakter`;
+      outputCount.textContent = `${outputDiv.textContent.length} karakter`;
+    }
+
+    examplesInput.addEventListener('input', () => {
+      examplesCount.textContent = `${examplesInput.value.length}/500 karakter`;
+    });
+
+    stepsInput.addEventListener('input', () => {
+      stepsCount.textContent = `${stepsInput.value.length}/500 karakter`;
+    });
+
+    // Toast notification
+    function showToast(message, isError = false) {
+      toast.textContent = message;
+      toast.className = isError ? 'toast error show' : 'toast show';
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Generate prompt
+    function generatePrompt() {
+      const role = roleInput.value.trim();
+      const objective = objectiveInput.value.trim();
+      const constraints = constraintsInput.value.trim();
+      
+      if (!role || !objective || !constraints) {
+        showToast('Harap isi setidaknya Peran, Tujuan, dan Batasan!', true);
+        return;
+      }
+      
+      const examples = examplesInput.value.trim();
+      const steps = stepsInput.value.trim();
+      const audience = audienceInput.value.trim();
+      const variants = variantsInput.value.trim();
+      const tone = toneInput.value;
 
       let prompt = '';
       if (role) prompt += `Anda adalah ${role}. `;
-      if (obj) prompt += `${obj}. `;
-      if (cons) prompt += `${cons}. `;
-      if (ex) prompt += `Contoh:\n${ex}\n`;
-      if (st) prompt += `Langkah:\n${st}\n`;
-      if (aud) prompt += `Target audiens: ${aud}. `;
-      if (varg) prompt += `Berikan variasi gaya: ${varg}. `;
-      if (!prompt) prompt = 'Silakan isi setidaknya satu bidang di atas untuk menghasilkan prompt.';
+      if (objective) prompt += `Tugas Anda adalah ${objective}. `;
+      if (constraints) prompt += `Batasan: ${constraints}. `;
+      if (tone) prompt += `Gunakan nada ${tone.toLowerCase()}. `;
+      if (audience) prompt += `Target audiens: ${audience}. `;
+      if (variants) prompt += `Variasi yang diinginkan: ${variants}. `;
+      
+      if (examples) {
+        prompt += `\n\nContoh Input/Output:\n${examples}`;
+      }
+      
+      if (steps) {
+        prompt += `\n\nLangkah-langkah:\n${steps}`;
+      }
 
-      document.getElementById('output').textContent = prompt;
-    };
+      outputDiv.textContent = prompt;
+      updateCharacterCounts();
+      showToast('Prompt generated!');
+    }
 
-    document.getElementById('generateBtn').addEventListener('click', generate);
-    document.getElementById('copyBtn').addEventListener('click', () => {
-      const txt = document.getElementById('output').textContent;
-      navigator.clipboard.writeText(txt);
-      alert('Prompt disalin ke clipboard!');
-    });
+    // Copy to clipboard
+    function copyToClipboard() {
+      const text = outputDiv.textContent;
+      if (!text || text === 'Hasil prompt akan muncul di sini...') {
+        showToast('Tidak ada prompt untuk disalin!', true);
+        return;
+      }
+      
+      navigator.clipboard.writeText(text)
+        .then(() => showToast('Prompt disalin ke clipboard!'))
+        .catch(err => {
+          console.error('Failed to copy:', err);
+          showToast('Gagal menyalin prompt!', true);
+        });
+    }
+
+    // Clear form
+    function clearForm() {
+      document.getElementById('promptForm').reset();
+      outputDiv.textContent = 'Hasil prompt akan muncul di sini... Isi setidaknya bidang "Peran", "Tujuan", dan "Batasan" lalu klik Generate.';
+      updateCharacterCounts();
+      showToast('Form berhasil dibersihkan!');
+    }
+
+    // Save prompt
+    function savePrompt() {
+      const text = outputDiv.textContent;
+      if (!text || text.includes('Hasil prompt akan muncul di sini...')) {
+        showToast('Tidak ada prompt untuk disimpan!', true);
+        return;
+      }
+      
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ai-prompt-${new Date().toISOString().slice(0,10)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showToast('Prompt berhasil disimpan!');
+    }
+
+    // Event listeners
+    generateBtn.addEventListener('click', generatePrompt);
+    copyBtn.addEventListener('click', copyToClipboard);
+    clearBtn.addEventListener('click', clearForm);
+    saveBtn.addEventListener('click', savePrompt);
+
+    // Initialize
+    updateCharacterCounts();
   </script>
 </body>
 </html>
