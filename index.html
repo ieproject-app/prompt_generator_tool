@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prompt Generator</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f8fafc;
+      --card: #fff;
+      --text: #1f2937;
+      --border: #e5e7eb;
+    }
+    body { margin:0; font-family: sans-serif; background: var(--bg); color: var(--text); }
+    header { background: var(--primary); color:#fff; padding: 1rem; text-align:center; }
+    main { max-width:800px; margin:2rem auto; padding:0 1rem; }
+    .card { background: var(--card); border:1px solid var(--border); border-radius:8px; padding:1.5rem; margin-bottom:1.5rem; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
+    .card h2 { margin-top:0; }
+    label { display:block; margin:0.75rem 0 0.25rem; font-weight:600; }
+    input[type=text], textarea, select { width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; font-size:1rem; }
+    textarea { resize: vertical; }
+    .inline { display:flex; gap:1rem; flex-wrap:wrap; }
+    button { background: var(--primary); color:#fff; border:none; padding:0.75rem 1.5rem; border-radius:4px; cursor:pointer; font-size:1rem; }
+    button:hover { opacity:0.9; }
+    #output { white-space: pre-wrap; background:#f1f5f9; padding:1rem; border-radius:4px; border:1px solid var(--border); }
+    .flex-right { display:flex; justify-content:flex-end; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AI Prompt Generator</h1>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Atur Prompt</h2>
+      <form id="promptForm">
+        <label for="role">Peran / Persona</label>
+        <input type="text" id="role" placeholder="e.g. Content writer berpengalaman" />
+
+        <label for="objective">Tujuan / Output yang Diharapkan</label>
+        <input type="text" id="objective" placeholder="e.g. Outline artikel blog tentang..." />
+
+        <label for="constraints">Batasan & Format</label>
+        <input type="text" id="constraints" placeholder="e.g. Maksimal 8 poin, bahasa Indonesia santai" />
+
+        <label for="examples">Contoh (Optional)</label>
+        <textarea id="examples" rows="3" placeholder="Contoh Input-Output... (few-shot)"></textarea>
+
+        <label for="steps">Langkah-langkah Terstruktur (Optional)</label>
+        <textarea id="steps" rows="3" placeholder="Langkah 1: ..., Langkah 2: ..."></textarea>
+
+        <label for="audience">Data / Audiens (Optional)</label>
+        <input type="text" id="audience" placeholder="Target audiens e.g. mahasiswa 18-25 tahun" />
+
+        <label for="variants">Variasi & Gaya (Optional)</label>
+        <input type="text" id="variants" placeholder="e.g. Profesional, santai, humoris" />
+
+        <div class="flex-right" style="margin-top:1rem;">
+          <button type="button" id="generateBtn">Generate Prompt</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Prompt Anda</h2>
+      <div id="output">Isi prompt akan muncul di sini...</div>
+      <div class="flex-right" style="margin-top:1rem;">
+        <button id="copyBtn">Salin ke Clipboard</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const generate = () => {
+      const r = document.getElementById('role').value.trim();
+      const o = document.getElementById('objective').value.trim();
+      const c = document.getElementById('constraints').value.trim();
+      const ex = document.getElementById('examples').value.trim();
+      const st = document.getElementById('steps').value.trim();
+      const a = document.getElementById('audience').value.trim();
+      const v = document.getElementById('variants').value.trim();
+
+      let prompt = '';
+      if(r) prompt += `Anda adalah ${r}. `;
+      if(o) prompt += `${o}. `;
+      if(c) prompt += `${c}. `;
+      if(ex) prompt += `Contoh:
+${ex}
+`;
+      if(st) prompt += `Langkah:
+${st}
+`;
+      if(a) prompt += `Target audiens: ${a}. `;
+      if(v) prompt += `Berikan variasi gaya: ${v}. `;
+      if(!prompt) prompt = 'Silakan isi setidaknya satu bidang di atas untuk menghasilkan prompt.';
+      document.getElementById('output').textContent = prompt;
+    };
+
+    document.getElementById('generateBtn').onclick = generate;
+    document.getElementById('copyBtn').onclick = () => {
+      const text = document.getElementById('output').textContent;
+      navigator.clipboard.writeText(text);
+      alert('Prompt disalin!');
+    };
+  </script>
+</body>
+</html>
