@@ -374,13 +374,87 @@
         </div>
       </div>
       
+<div class="tab-content" id="presets-tab">
+        <h2>Template Prompt</h2>
+        <p>Pilih template untuk memulai cepat:</p>
+        
+        <button class="preset-btn" data-preset="content-writer">
+          <div class="preset-title">Penulis Konten</div>
+          <div class="preset-desc">Untuk membuat artikel blog atau konten website</div>
+        </button>
+        
+        <button class="preset-btn" data-preset="social-media">
+          <div class="preset-title">Social Media Manager</div>
+          <div class="preset-desc">Untuk membuat konten media sosial yang menarik</div>
+        </button>
+        
+        <button class="preset-btn" data-preset="academic-research">
+          <div class="preset-title">Penelitian Akademik</div>
+          <div class="preset-desc">Untuk membantu penulisan karya ilmiah</div>
+        </button>
+        
+        <button class="preset-btn" data-preset="business-plan">
+          <div class="preset-title">Perencanaan Bisnis</div>
+          <div class="preset-desc">Untuk menyusun strategi atau rencana bisnis</div>
+        </button>
+        
+        <button class="preset-btn" data-preset="coding-assistant">
+          <div class="preset-title">Asisten Pemrograman</div>
+          <div class="preset-desc">Untuk membantu menulis atau debugging kode</div>
+        </button>
+      </div>
+      
       <div class="tab-content" id="guide-tab">
-        <!-- ... Panduan membuat prompt seperti semula ... -->
+        <h2>Panduan Membuat Prompt Efektif</h2>
+        <h3>1. Peran/Persona</h3>
+        <p>Tentukan peran AI yang Anda inginkan. Contoh: "Anda adalah seorang content writer dengan pengalaman 5 tahun di bidang teknologi."</p>
+        
+        <h3>2. Tujuan Jelas</h3>
+        <p>Jelaskan output yang Anda harapkan secara spesifik. Contoh: "Buatkan outline artikel blog tentang manfaat AI untuk UMKM."</p>
+        
+        <h3>3. Batasan & Format</h3>
+        <p>Berikan batasan yang jelas. Contoh: "Maksimal 500 kata, bahasa Indonesia santai, sertakan call-to-action di akhir."</p>
+        
+        <h3>4. Contoh (Few-shot Learning)</h3>
+        <p>Berikan contoh input-output yang Anda inginkan untuk membantu AI memahami pola yang diharapkan.</p>
+        
+        <h3>5. Langkah-langkah</h3>
+        <p>Jika perlu, pecahkan tugas menjadi langkah-langkah terstruktur.</p>
+        
+        <h3>Tips Tambahan:</h3>
+        <ul>
+          <li>Gunakan bahasa yang jelas dan spesifik</li>
+          <li>Sertakan konteks yang relevan</li>
+          <li>Tentukan format output yang diinginkan</li>
+          <li>Berikan contoh jika memungkinkan</li>
+          <li>Tentukan nada dan gaya penulisan</li>
+        </ul>
       </div>
     </div>
 
     <div class="card">
-      <!-- ... bagian output dan tombol Salin/Simpan seperti semula ... -->
+      <div class="flex" style="justify-content: space-between; align-items: center;">
+        <h2>Prompt Anda</h2>
+        <div class="char-count" id="output-count">0 karakter</div>
+      </div>
+      <div id="output">Hasil prompt akan muncul di sini... Isi setidaknya bidang "Peran", "Tujuan", dan "Batasan" lalu klik Generate.</div>
+      <div class="flex" style="margin-top:1rem;">
+        <button type="button" class="btn" id="copyBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          Salin Prompt
+        </button>
+        <button type="button" class="btn btn-secondary" id="saveBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Simpan
+        </button>
+      </div>
     </div>
   </main>
 
